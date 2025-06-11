@@ -356,9 +356,17 @@ button:hover span:not(:nth-child(6)) {
         }
     }
     });
-
+    document.getElementById("survey-form").addEventListener("reset", function() {
+    produits.forEach((_, i) => {
+        const monthlyDiv = document.getElementById(`monthly_${i}`);
+        const boxSpan    = document.getElementById(`boxes_${i}`);
+        if (monthlyDiv) monthlyDiv.style.display = "none";
+        if (boxSpan)    boxSpan.textContent   = "0.00";
+    });
+    });
 
  const form = document.getElementById("survey-form");
+
 
   form.addEventListener("submit", function(e) {
     e.preventDefault();
@@ -417,14 +425,7 @@ button:hover span:not(:nth-child(6)) {
 
 
 
-    document.getElementById("survey-form").addEventListener("reset", function() {
-    produits.forEach((_, i) => {
-        const monthlyDiv = document.getElementById(`monthly_${i}`);
-        const boxSpan    = document.getElementById(`boxes_${i}`);
-        if (monthlyDiv) monthlyDiv.style.display = "none";
-        if (boxSpan)    boxSpan.textContent   = "0.00";
-    });
-    });
+
 
   </script>
 </body>
