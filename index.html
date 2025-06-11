@@ -358,30 +358,62 @@ button:hover span:not(:nth-child(6)) {
     });
 
 
-    const form = document.getElementById("survey-form");
-    form.addEventListener("submit", function(e) {
-      e.preventDefault(); // stop the default POST
+ const form = document.getElementById("survey-form");
 
-      fetch(form.action, {
-        method: "POST",
-        mode: "cors",
-        headers: { "Accept": "application/json" },
-        body: new FormData(form)
-      })
-      .then(response => {
-        if (response.ok) {
-          alert("Prévisions soumises ! Merci 😊");
-          form.reset();
-        } else {
-          return response.json().then(data => {
-            throw new Error(data.error || "Erreur, veuillez réessayer.");
-          });
-        }
-      })
-      .catch(err => {
-        alert("Oups : " + err.message);
-      });
+  form.addEventListener("submit", function(e) {
+    e.preventDefault();
+
+    // 1) Build the products array
+    const productsData = produits.map((prod, i) => {
+      // annual total
+      const annualVal = Number(form[`annual_${i}`].value) || 0;
+
+      // monthly breakdown, only if toggled on
+      const monthlyInputs = Array.from(
+        document.querySelectorAll(`#monthly_${i} input`)
+      );
+      const monthly = monthlyInputs.map(input =>
+        Number(input.value) || 0
+      );
+
+      return {
+        id:       prod.ID,
+        product:  prod.Product.trim(),
+        annual:   annualVal,
+        monthly:  monthly
+      };
     });
+
+    // 2) Create FormData and append your other fields
+    const payload = new FormData();
+    payload.set("clientName", form.clientName.value);
+    payload.set("country",    form.country.value);
+    // single JSON field with all products
+    payload.set("products",   JSON.stringify(productsData));
+    // optional: redirect on success
+    payload.set("_next",      "https://aerostaz13.github.io/thank-you.html");
+
+    // 3) Send to Formspree
+    fetch(form.action, {
+      method: "POST",
+      mode:   "cors",
+      headers:{ "Accept": "application/json" },
+      body:    payload
+    })
+    .then(response => {
+      if (response.ok) {
+        alert("Prévisions soumises ! Merci 😊");
+        form.reset();
+      } else {
+        return response.json().then(data => {
+          throw new Error(data.error || "Erreur, veuillez réessayer.");
+        });
+      }
+    })
+    .catch(err => {
+      alert("Oups : " + err.message);
+    });
+  });
 
 
 
