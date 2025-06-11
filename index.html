@@ -359,28 +359,28 @@ button:hover span:not(:nth-child(6)) {
 
 
     const form = document.getElementById("survey-form");
-
     form.addEventListener("submit", function(e) {
-    e.preventDefault(); // stop the browser’s default POST
+      e.preventDefault(); // stop the default POST
 
-    fetch(form.action, {
+      fetch(form.action, {
         method: "POST",
+        mode: "cors",
         headers: { "Accept": "application/json" },
         body: new FormData(form)
-    })
-    .then(response => {
+      })
+      .then(response => {
         if (response.ok) {
-        alert("Prévisions soumises ! Merci 😊");
-        form.reset();
+          alert("Prévisions soumises ! Merci 😊");
+          form.reset();
         } else {
-        return response.json().then(data => {
+          return response.json().then(data => {
             throw new Error(data.error || "Erreur, veuillez réessayer.");
-        });
+          });
         }
-    })
-    .catch(err => {
+      })
+      .catch(err => {
         alert("Oups : " + err.message);
-    });
+      });
     });
 
 
